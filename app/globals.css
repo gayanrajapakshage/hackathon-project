@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-input: var(--input);
+  --color-neon: #39FF14;
+  --font-sans: 'Space Mono', monospace;
+  --font-mono: 'Space Mono', monospace;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+}
+
+:root {
+  --radius: 0;
+  --background: #000000;
+  --foreground: #39FF14;
+  --card: #0a0a0a;
+  --card-foreground: #39FF14;
+  --popover: #0a0a0a;
+  --popover-foreground: #39FF14;
+  --primary: #39FF14;
+  --primary-foreground: #000000;
+  --secondary: #111111;
+  --secondary-foreground: #39FF14;
+  --muted: #111111;
+  --muted-foreground: rgba(57, 255, 20, 0.5);
+  --accent: #39FF14;
+  --accent-foreground: #000000;
+  --destructive: #FF3333;
+  --border: #39FF14;
+  --input: #111111;
+  --ring: #39FF14;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Space Mono', monospace;
+  }
+}
+
+/* ─── Brutalist Utilities ─────────────────────────────── */
+.neon-text {
+  color: #39FF14;
+  text-shadow:
+    0 0 7px #39FF14,
+    0 0 14px #39FF14,
+    0 0 30px rgba(57, 255, 20, 0.4);
+}
+
+.neon-border {
+  border: 4px solid #39FF14;
+  box-shadow:
+    0 0 6px #39FF14,
+    inset 0 0 6px rgba(57, 255, 20, 0.1);
+}
+
+.neon-glow {
+  box-shadow:
+    0 0 10px #39FF14,
+    0 0 20px rgba(57, 255, 20, 0.5);
+}
+
+.brutalist-shadow {
+  box-shadow: 6px 6px 0px #39FF14;
+}
+
+.scanline {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.08),
+    rgba(0, 0, 0, 0.08) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+}
