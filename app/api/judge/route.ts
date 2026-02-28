@@ -9,6 +9,12 @@ const RequestSchema = z.object({
 
 const ResponseSchema = z.object({
   score: z.number().int().min(1).max(10),
+  aura_level: z.enum(["Negative", "Neutral", "Infinite"]),
+  breakdown: z.object({
+    fit_check: z.string(),
+    cinematography: z.string(),
+    absurdity_factor: z.string(),
+  }),
   verdict: z.string().max(300),
 });
 

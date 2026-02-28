@@ -3,37 +3,62 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+interface Breakdown {
+  fit_check: string;
+  cinematography: string;
+  absurdity_factor: string;
+}
+
 interface TerminalOutputProps {
-  text: string;
+  verdict: string;
+  breakdown: Breakdown;
   speed?: number; // ms per character
 }
 
-export function TerminalOutput({ text, speed = 45 }: TerminalOutputProps) {
+function TypingLine({ text, delay = 0, speed = 35 }: { text: string; delay?: number; speed?: number }) {
   const [displayed, setDisplayed] = useState("");
-  const [cursorVisible, setCursorVisible] = useState(true);
-  const [done, setDone] = useState(false);
+  const [started, setStarted] = useState(false);
 
-  // Typing effect
   useEffect(() => {
+    const startTimer = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(startTimer);
+  }, [delay]);
+
+  useEffect(() => {
+    if (!started) return;
     setDisplayed("");
-    setDone(false);
     let i = 0;
     const timer = setInterval(() => {
       i++;
       setDisplayed(text.slice(0, i));
-      if (i >= text.length) {
-        clearInterval(timer);
-        setDone(true);
-      }
+      if (i >= text.length) clearInterval(timer);
     }, speed);
     return () => clearInterval(timer);
-  }, [text, speed]);
+  }, [started, text, speed]);
 
-  // Cursor blink
+  return <span>{displayed}</span>;
+}
+
+export function TerminalOutput({ verdict, breakdown, speed = 35 }: TerminalOutputProps) {
+  const [cursorVisible, setCursorVisible] = useState(true);
+
+  // Estimated delays: each line starts after the previous finishes
+  const line1Delay = 200;
+  const line2Delay = line1Delay + breakdown.fit_check.length * speed + 300;
+  const line3Delay = line2Delay + breakdown.cinematography.length * speed + 300;
+  const line4Delay = line3Delay + breakdown.absurdity_factor.length * speed + 300;
+  const verdictDelay = line4Delay + verdict.length * speed + 300;
+
   useEffect(() => {
     const blink = setInterval(() => setCursorVisible((v) => !v), 530);
     return () => clearInterval(blink);
   }, []);
+
+  const rows: { label: string; value: string; delay: number }[] = [
+    { label: "FIT_CHECK", value: breakdown.fit_check, delay: line1Delay },
+    { label: "CINEMATOGRAPHY", value: breakdown.cinematography, delay: line2Delay },
+    { label: "ABSURDITY", value: breakdown.absurdity_factor, delay: line3Delay },
+  ];
 
   return (
     <motion.div
@@ -52,23 +77,31 @@ export function TerminalOutput({ text, speed = 45 }: TerminalOutputProps) {
         </span>
       </div>
 
-      {/* Output line */}
-      <div className="px-4 py-4 space-y-1">
-        <p className="text-[#39FF14]/40 text-xs tracking-widest mb-2">
-          {`> ANALYZING SUBJECT...`}
-          {done && (
-            <span className="text-[#39FF14]/80 ml-2">DONE</span>
-          )}
-        </p>
-        <div className="flex items-start gap-2">
-          <span className="text-[#39FF14]/50 shrink-0">$</span>
-          <p className="text-[#39FF14] leading-relaxed tracking-wide">
-            {displayed}
-            <span
-              className="inline-block w-[9px] h-[1.1em] bg-[#39FF14] ml-0.5 translate-y-[2px]"
-              style={{ opacity: cursorVisible ? 1 : 0 }}
-            />
-          </p>
+      <div className="px-4 py-4 space-y-2 text-xs">
+        <p className="text-[#39FF14]/40 tracking-widest mb-3">{`> ANALYZING SUBJECT...`}</p>
+
+        {/* Breakdown rows */}
+        {rows.map(({ label, value, delay }) => (
+          <div key={label} className="flex items-start gap-2">
+            <span className="text-[#39FF14]/40 shrink-0 tracking-widest">{label}:</span>
+            <span className="text-[#39FF14]/80 leading-relaxed">
+              <TypingLine text={value} delay={delay} speed={speed} />
+            </span>
+          </div>
+        ))}
+
+        {/* Divider */}
+        <div className="border-t border-[#39FF14]/20 pt-2 mt-1">
+          <div className="flex items-start gap-2">
+            <span className="text-[#39FF14]/50 shrink-0">$</span>
+            <p className="text-[#39FF14] leading-relaxed tracking-wide">
+              <TypingLine text={verdict} delay={verdictDelay} speed={speed} />
+              <span
+                className="inline-block w-[9px] h-[1.1em] bg-[#39FF14] ml-0.5 translate-y-[2px]"
+                style={{ opacity: cursorVisible ? 1 : 0 }}
+              />
+            </p>
+          </div>
         </div>
       </div>
     </motion.div>

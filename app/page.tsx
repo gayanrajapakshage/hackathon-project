@@ -13,6 +13,12 @@ type AppState = "idle" | "loading" | "result";
 
 interface JudgeResult {
   score: number;
+  aura_level: "Negative" | "Neutral" | "Infinite";
+  breakdown: {
+    fit_check: string;
+    cinematography: string;
+    absurdity_factor: string;
+  };
   verdict: string;
 }
 
@@ -235,11 +241,26 @@ export default function Home() {
                 TUFF ANALYSIS COMPLETE
               </p>
 
-              <div className="flex justify-center">
+              <div className="flex flex-col items-center gap-2">
                 <Gauge score={result.score} />
+                <div className="flex items-center gap-2 text-[10px] tracking-[0.4em] uppercase font-bold">
+                  <span className="text-[#39FF14]/40">AURA:</span>
+                  <span
+                    className="px-2 py-0.5 border"
+                    style={{
+                      color: result.aura_level === "Negative" ? "#FF3333" : result.aura_level === "Infinite" ? "#39FF14" : "#FFD700",
+                      borderColor: result.aura_level === "Negative" ? "#FF3333" : result.aura_level === "Infinite" ? "#39FF14" : "#FFD700",
+                    }}
+                  >
+                    {result.aura_level}
+                  </span>
+                </div>
               </div>
 
-              <TerminalOutput text={result.verdict} />
+              <TerminalOutput
+                verdict={result.verdict}
+                breakdown={result.breakdown}
+              />
 
               <button
                 onClick={handleReset}
