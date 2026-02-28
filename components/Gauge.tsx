@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 
 interface GaugeProps {
   score: number; // 1–10
+  auraLevel: "Negative" | "Neutral" | "Infinite";
 }
 
 const CX = 110;
@@ -16,19 +17,11 @@ function getColor(score: number): string {
   return "#39FF14";
 }
 
-function getLabel(score: number): string {
-  if (score <= 2) return "ABSOLUTE COWARD";
-  if (score <= 4) return "SOFT AS PUDDING";
-  if (score <= 6) return "SOMEWHAT TUFF";
-  if (score <= 8) return "CERTIFIED TUFF";
-  return "LEGENDARY STATUS";
-}
 
 const ARC_PATH = `M ${CX - R} ${CY} A ${R} ${R} 0 0 0 ${CX + R} ${CY}`;
 
-export function Gauge({ score }: GaugeProps) {
+export function Gauge({ score, auraLevel }: GaugeProps) {
   const color = getColor(score);
-  const label = getLabel(score);
 
   return (
     <div className="flex flex-col items-center gap-1">
@@ -112,7 +105,7 @@ export function Gauge({ score }: GaugeProps) {
         </motion.text>
       </svg>
 
-      {/* Tier label */}
+      {/* Aura level label */}
       <motion.p
         className="text-xs tracking-[0.25em] uppercase font-bold"
         style={{ color }}
@@ -120,7 +113,7 @@ export function Gauge({ score }: GaugeProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.6 }}
       >
-        {label}
+        {auraLevel}
       </motion.p>
     </div>
   );
