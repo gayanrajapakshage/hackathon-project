@@ -1,3 +1,5 @@
+'use server'
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const SYSTEM_INSTRUCTION = `You are a legendary underground drill sergeant and fashion critic. Analyze the subject's 'tuffness' (aura, style, confidence, grit).
