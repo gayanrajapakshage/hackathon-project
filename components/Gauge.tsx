@@ -1,6 +1,7 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
 interface GaugeProps {
   score: number; // 1–10
@@ -10,6 +11,9 @@ interface GaugeProps {
 const CX = 110;
 const CY = 110;
 const R = 90;
+const NEEDLE_R = 65;
+const SEMICIRCLE_LENGTH = Math.PI * R;
+const ARC_PATH = `M ${CX - R} ${CY} A ${R} ${R} 0 0 0 ${CX + R} ${CY}`;
 
 function getColor(score: number): string {
   if (score <= 3) return "#FF3333";
@@ -17,11 +21,18 @@ function getColor(score: number): string {
   return "#39FF14";
 }
 
-
-const ARC_PATH = `M ${CX - R} ${CY} A ${R} ${R} 0 0 0 ${CX + R} ${CY}`;
-
 export function Gauge({ score, auraLevel }: GaugeProps) {
   const color = getColor(score);
+
+  // Needle angle: π = pointing left (score 0), 0 = pointing right (score 10)
+  const needleAngle = useMotionValue(Math.PI);
+  const needleX2 = useTransform(needleAngle, (a) => CX + NEEDLE_R * Math.cos(a));
+  const needleY2 = useTransform(needleAngle, (a) => CY - NEEDLE_R * Math.sin(a));
+
+  useEffect(() => {
+    const target = Math.PI * (1 - score / 10);
+    animate(needleAngle, target, { duration: 1.8, ease: [0.25, 1, 0.5, 1] });
+  }, [score, needleAngle]);
 
   return (
     <div className="flex flex-col items-center gap-1">
@@ -59,17 +70,38 @@ export function Gauge({ score, auraLevel }: GaugeProps) {
           strokeLinecap="butt"
         />
 
-        {/* Colored filled arc */}
+        {/* Colored filled arc — explicit dasharray for reliability */}
         <motion.path
           d={ARC_PATH}
           fill="none"
           stroke={color}
           strokeWidth={16}
           strokeLinecap="butt"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: score / 10 }}
+          strokeDasharray={SEMICIRCLE_LENGTH}
+          initial={{ strokeDashoffset: SEMICIRCLE_LENGTH }}
+          animate={{ strokeDashoffset: SEMICIRCLE_LENGTH * (1 - score / 10) }}
           transition={{ duration: 1.8, ease: [0.25, 1, 0.5, 1] }}
           style={{ filter: `drop-shadow(0 0 8px ${color})` }}
+        />
+
+        {/* Needle */}
+        <motion.line
+          x1={CX}
+          y1={CY}
+          x2={needleX2}
+          y2={needleY2}
+          stroke={color}
+          strokeWidth={3}
+          strokeLinecap="round"
+          style={{ filter: `drop-shadow(0 0 4px ${color})` }}
+        />
+        {/* Needle hub */}
+        <circle
+          cx={CX}
+          cy={CY}
+          r={6}
+          fill={color}
+          style={{ filter: `drop-shadow(0 0 6px ${color})` }}
         />
 
         {/* Score number */}
