@@ -12,7 +12,6 @@ const CX = 110;
 const CY = 110;
 const R = 90;
 const NEEDLE_R = 65;
-const SEMICIRCLE_LENGTH = Math.PI * R;
 const ARC_PATH = `M ${CX - R} ${CY} A ${R} ${R} 0 0 0 ${CX + R} ${CY}`;
 
 function getColor(score: number): string {
@@ -70,16 +69,17 @@ export function Gauge({ score, auraLevel }: GaugeProps) {
           strokeLinecap="butt"
         />
 
-        {/* Colored filled arc — explicit dasharray for reliability */}
+        {/* Colored filled arc */}
         <motion.path
           d={ARC_PATH}
           fill="none"
           stroke={color}
           strokeWidth={16}
           strokeLinecap="butt"
-          strokeDasharray={SEMICIRCLE_LENGTH}
-          initial={{ strokeDashoffset: SEMICIRCLE_LENGTH }}
-          animate={{ strokeDashoffset: SEMICIRCLE_LENGTH * (1 - score / 10) }}
+          pathLength="1"
+          strokeDasharray="1"
+          initial={{ strokeDashoffset: 1 }}
+          animate={{ strokeDashoffset: 1 - score / 10 }}
           transition={{ duration: 1.8, ease: [0.25, 1, 0.5, 1] }}
           style={{ filter: `drop-shadow(0 0 8px ${color})` }}
         />
